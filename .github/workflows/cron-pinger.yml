@@ -14,9 +14,9 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 6 # hard cap of 6 minutes
+    timeout-minutes: 10 # hard cap of 10 minutes
     env:
-      TIMEOUT_MS: "360000"
+      TIMEOUT_MS: "300000"
       METHOD: GET
       # TARGET_URL must be provided via repo/org secret
       TARGET_URL: ${{ secrets.TARGET_URL }}
