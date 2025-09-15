@@ -50,3 +50,24 @@ Notes
 
 —
 If you want me to wire custom headers, a POST body, or retries with backoff, say the word and I’ll add it.
+
+## Use with GitHub Actions (alternative to Render)
+
+This repo also includes a GitHub Actions workflow at `.github/workflows/cron-pinger.yml` that runs every 13 minutes with a 120s cap.
+
+Setup
+
+1. In your GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret.
+2. Create a secret named `TARGET_URL` with your endpoint (e.g., `https://your-app.onrender.com/health`).
+3. Optionally adjust the schedule in the workflow (`*/13 * * * *`) and env vars `METHOD`/`TIMEOUT_MS`.
+
+What it does
+
+- Checks out this repo, sets up Node 18, and runs `node scripts/ping.js`.
+- Uses a job `timeout-minutes: 2` in addition to the script’s own 120s timeout for belt-and-suspenders.
+- Concurrency guard prevents overlaps.
+
+Notes
+
+- GitHub Actions cron uses UTC. The expression `*/13 * * * *` is every 13 minutes regardless of timezone.
+- If your endpoint requires headers or auth, extend `scripts/ping.js` to add fetch options.

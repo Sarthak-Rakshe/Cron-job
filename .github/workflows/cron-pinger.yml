@@ -1,0 +1,31 @@
+name: Cron Pinger (every 13 minutes)
+
+on:
+  schedule:
+    - cron: "*/13 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: cron-pinger
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2 # hard cap of 120 seconds
+    env:
+      TIMEOUT_MS: "120000"
+      METHOD: GET
+      # TARGET_URL must be provided via repo/org secret
+      TARGET_URL: ${{ secrets.TARGET_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      - name: Run pinger
+        run: node scripts/ping.js
