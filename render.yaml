@@ -1,0 +1,13 @@
+services:
+  - type: cron
+    name: backend-pinger-13m
+    schedule: "*/13 * * * *" # every 13 minutes
+    runtime: node
+    envVars:
+      - key: TARGET_URL
+        sync: false # set in Render Dashboard or in this file before deploy
+      - key: TIMEOUT_MS
+        value: "120000" # 120s timeout
+      - key: METHOD
+        value: "GET"
+    startCommand: "node scripts/ping.js"
