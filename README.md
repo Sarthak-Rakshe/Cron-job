@@ -5,7 +5,7 @@ This repo defines a Render Cron Job that pings your backend URL every 13 minutes
 What it does
 
 - Calls your backend URL (GET by default; configurable) on a schedule: `*/13 * * * *`.
-- Aborts the request if it takes longer than 120 seconds.
+- Aborts the request if it takes longer than 5 minutes.
 - Exits non‑zero on failure so you can inspect logs/alerts in Render.
 
 Files
