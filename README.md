@@ -53,21 +53,22 @@ If you want me to wire custom headers, a POST body, or retries with backoff, say
 
 ## Use with GitHub Actions (alternative to Render)
 
-This repo also includes a GitHub Actions workflow at `.github/workflows/cron-pinger.yml` that runs every 13 minutes with a 120s cap.
+This repo also includes a GitHub Actions workflow at `.github/workflows/cron-pinger.yml` that runs about every 13 minutes with a 120-second request timeout.
 
 Setup
 
 1. In your GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret.
 2. Create a secret named `TARGET_URL` with your endpoint (e.g., `https://your-app.onrender.com/health`).
-3. Optionally adjust the schedule in the workflow (`*/13 * * * *`) and env vars `METHOD`/`TIMEOUT_MS`.
+3. Optionally adjust the schedule in the workflow (`5,18,31,44,57 * * * *`) and env vars `METHOD`/`TIMEOUT_MS`.
 
 What it does
 
-- Checks out this repo, sets up Node 18, and runs `node scripts/ping.js`.
-- Uses a job `timeout-minutes: 2` in addition to the script’s own 120s timeout for belt-and-suspenders.
-- Concurrency guard prevents overlaps.
+- Checks out this repo with read-only contents permission, sets up Node 24, and runs `node scripts/ping.js`.
+- Uses a six-minute job timeout in addition to the script’s 120-second request timeout and retry.
+- Prevents concurrent workflow runs from canceling one another.
 
 Notes
 
-- GitHub Actions cron uses UTC. The expression `*/13 * * * *` is every 13 minutes regardless of timezone.
+- The schedule uses UTC explicitly and runs at minutes 5, 18, 31, 44, and 57 of each hour. This keeps starts away from the top of the hour; the interval across the hour boundary is 8 minutes.
+- GitHub scheduled workflows can be delayed during periods of high load, so Actions cannot guarantee an exact start time. The workflow file must be on the default branch, and scheduled runs execute from that branch.
 - If your endpoint requires headers or auth, extend `scripts/ping.js` to add fetch options.
